@@ -10,9 +10,14 @@ Dependencies
 
 Building
 --------
-From a terminal, type
+From a terminal, type `make`
 
-     make
+
+Using
+-----
+Run `xrandr-invert-colors.bin` for inverting colors on all screens.
+No program options are implemented (yet?).
+
 
 Achknowledgements
 -----------------
