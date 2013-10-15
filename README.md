@@ -18,6 +18,8 @@ Using
 Run `xrandr-invert-colors.bin` for inverting colors on all screens.
 No program options are implemented (yet?).
 
+Hint: put the executable in the a directory listed in $PATH, and bind the execution of `xrandr-invert-colors.bin` to a shortcut key.
+
 
 Achknowledgements
 -----------------
