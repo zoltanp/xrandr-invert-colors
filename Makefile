@@ -1,9 +1,8 @@
-
 CFLAGS= -Wall -Wextra
 CFLAGS+= -O0 -ggdb
 CFLAGS+= -std=c99
 
-LDFLAGS= -lxcb-randr
+LDFLAGS= -lxcb-randr -lxcb
 
 all: xrandr-invert-colors.bin
 
