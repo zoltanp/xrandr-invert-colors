@@ -20,12 +20,17 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <limits.h>
+#include <string.h>
+#include <ctype.h>
 
 #define _(x) x
 
 int invert_colors(randr_state_t *state);
+int parse_arguments(int argc, const char *argv[], randr_state_t *state);
 
-int main(void){
+int main(int argc, const char *argv[]){
 	randr_state_t state;
 
 	if(randr_init(&state) < 0){
@@ -36,6 +41,12 @@ int main(void){
 		printf("error while start\n");
 		return 1;
 	}
+
+	if(parse_arguments(argc, argv, &state) < 0) {
+		printf("error while parsing arguments\n");
+		return 2;
+	}
+
 	if(invert_colors(&state) < 0){
 		printf("error while inverting\n");
 		// no return!
@@ -49,6 +60,45 @@ int main(void){
 
 	randr_free(&state);
 
+	return 0;
+}
+
+int parse_arguments(int argc, const char *argv[], randr_state_t *state) {
+	/* first argument is the program name, skip it */
+	int current_arg;
+	for (current_arg = 1; current_arg < argc; current_arg++) {
+		if (strcmp(argv[current_arg], "-s") == 0) {
+			/* next argument should be the screen number */
+			if (argc - current_arg > 1) {
+				current_arg++;
+				/* expect only numbers in the string */
+				for (const char *arg_char = argv[current_arg]; *arg_char != 0; ++arg_char) {
+					if (!isdigit(*arg_char)) {
+						printf("Screen number expected after '-s', instead of '%s'. Aborting.\n", argv[current_arg]);
+						return -1;
+					}
+				}
+				errno = 0;
+				long int screen_nr = strtol(argv[current_arg], NULL, 10);
+				if ((ERANGE == errno) || (LONG_MIN == errno) || (LONG_MAX == errno)) {
+					printf("Screen number expected after '-s', instead of '%s'. Aborting.\n", argv[current_arg]);
+					return -1;
+				}
+				if (screen_nr >= INT_MAX) {
+					printf("Screen number too big. Got %ld, at most expected %d. Aborting.\n", screen_nr, INT_MAX);
+					return -2;
+				}
+				printf("screen_nr = %ld\n", screen_nr);
+				state->crtc_num = screen_nr;
+			} else {
+				printf("Screen number expected after '-s' option. Aborting.\n");
+				return -3;
+			}
+		} else {
+			printf("Unknown argument: '%s'. Aborting.\n", argv[current_arg]);
+			return -4;
+		}
+	}
 	return 0;
 }
 
