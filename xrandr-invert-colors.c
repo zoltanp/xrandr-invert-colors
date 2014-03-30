@@ -18,12 +18,8 @@
 #include "gamma_randr.h"
 
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
-#include <errno.h>
-#include <limits.h>
 #include <string.h>
-#include <ctype.h>
 
 #define _(x) x
 
@@ -63,6 +59,9 @@ int main(int argc, const char *argv[]){
 	return 0;
 }
 
+void display_usage(const char *program_name);
+void display_version(const char *program_name);
+
 int parse_arguments(int argc, const char *argv[], randr_state_t *state) {
 	/* first argument is the program name, skip it */
 	int current_arg;
@@ -71,29 +70,28 @@ int parse_arguments(int argc, const char *argv[], randr_state_t *state) {
 			/* next argument should be the screen number */
 			if (argc - current_arg > 1) {
 				current_arg++;
-				/* expect only numbers in the string */
-				for (const char *arg_char = argv[current_arg]; *arg_char != 0; ++arg_char) {
-					if (!isdigit(*arg_char)) {
-						printf("Screen number expected after '-s', instead of '%s'. Aborting.\n", argv[current_arg]);
-						return -1;
-					}
-				}
-				errno = 0;
-				long int screen_nr = strtol(argv[current_arg], NULL, 10);
-				if ((ERANGE == errno) || (LONG_MIN == errno) || (LONG_MAX == errno)) {
-					printf("Screen number expected after '-s', instead of '%s'. Aborting.\n", argv[current_arg]);
+				int screen_nr;
+				char extra_junk[4];
+				if(sscanf(argv[current_arg], "%d%c", &screen_nr, extra_junk) != 1) {
+					printf("Screen number expected after '-s', instead of '%s'. Aborting.\n", 
+						argv[current_arg]);
 					return -1;
 				}
-				if (screen_nr >= INT_MAX) {
-					printf("Screen number too big. Got %ld, at most expected %d. Aborting.\n", screen_nr, INT_MAX);
-					return -2;
-				}
-				printf("screen_nr = %ld\n", screen_nr);
+				printf("screen_nr = %d\n", screen_nr);
 				state->crtc_num = screen_nr;
 			} else {
 				printf("Screen number expected after '-s' option. Aborting.\n");
 				return -3;
 			}
+		} else if (strcmp(argv[current_arg], "-h") == 0) {
+			display_usage(argv[0]);
+			exit(EXIT_SUCCESS);
+		} else if (strcmp(argv[current_arg], "--help") == 0) {
+			display_usage(argv[0]);
+			exit(EXIT_SUCCESS);
+		} else if (strcmp(argv[current_arg], "--version") == 0) {
+			display_version(argv[0]);
+			exit(EXIT_SUCCESS);
 		} else {
 			printf("Unknown argument: '%s'. Aborting.\n", argv[current_arg]);
 			return -4;
@@ -102,6 +100,20 @@ int parse_arguments(int argc, const char *argv[], randr_state_t *state) {
 	return 0;
 }
 
+void display_usage(const char * program_name) {
+	printf("Usage: %s [-s screen_number]\n", program_name);
+	printf("       %s -h\n", program_name);
+	printf("       %s --help\n", program_name);
+	printf("       %s --version\n", program_name);
+	printf("Simple utility that inverts colors on all screens, using XrandR.\n");
+	printf("When no parameter is given, it inverts colors on all screens; "
+		"if the screen_number parameter is given, then it inverts colors on "
+		"that particular XRandR screen. See 'xrandr -q' for the list of screens.\n");
+}
+
+void display_version(const char * program_name) {
+	printf("%s: version 0.01\n", program_name);
+}
 
 int invert_colors_for_crtc(randr_state_t *state, int crtc_num);
 
