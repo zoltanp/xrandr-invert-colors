@@ -21,6 +21,7 @@ The follwing program option is implemented:
 * `-s <crtc_number>` : Instead of inverting all screens, invert only the colors of the screen identified by `<crtc_number>`.
 * `--help` and `-h` : Print a short help for the program.
 * `--version` : Print a (dummy) version information.
+* `-d` : Enables debug log on standard output. Prints diagonstic messages.
 
 Hint: put the executable in the a directory listed in $PATH, and bind the execution of `xrandr-invert-colors.bin` to a shortcut key.
 
