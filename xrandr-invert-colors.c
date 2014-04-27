@@ -83,10 +83,7 @@ int parse_arguments(int argc, const char *argv[], randr_state_t *state) {
 				printf("Screen number expected after '-s' option. Aborting.\n");
 				return -3;
 			}
-		} else if (strcmp(argv[current_arg], "-h") == 0) {
-			display_usage(argv[0]);
-			exit(EXIT_SUCCESS);
-		} else if (strcmp(argv[current_arg], "--help") == 0) {
+		} else if ((strcmp(argv[current_arg], "-h") == 0) || (strcmp(argv[current_arg], "--help") == 0)) {
 			display_usage(argv[0]);
 			exit(EXIT_SUCCESS);
 		} else if (strcmp(argv[current_arg], "--version") == 0) {
