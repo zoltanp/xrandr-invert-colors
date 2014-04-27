@@ -23,28 +23,40 @@
 
 #define _(x) x
 
+#define LOG_DEBUG(debug_flag, ...) \
+	if ((debug_flag)) { \
+		printf(__VA_ARGS__); \
+	}
+
 int invert_colors(randr_state_t *state);
-int parse_arguments(int argc, const char *argv[], randr_state_t *state);
+int parse_arguments(int argc, const char *argv[], int is_debug_enabled, randr_state_t *state);
+int parse_debug_argument(int argc, const char *argv[], int *is_debug_enabled);
 
 int main(int argc, const char *argv[]){
+	int is_debug_enabled = 0;
 	randr_state_t state;
 
-	if(randr_init(&state) < 0){
-		printf("error while init\n");
-		return 1;
-	}
-	if(randr_start(&state) < 0){
-		printf("error while start\n");
-		return 1;
+	if (parse_debug_argument(argc, argv, &is_debug_enabled) < 0) {
+		fprintf(stderr, "error while parsing arguments (for debug flag)\n");
+		return 3;
 	}
 
-	if(parse_arguments(argc, argv, &state) < 0) {
-		printf("error while parsing arguments\n");
+	if (randr_init(&state) < 0){
+		fprintf(stderr, "error while init\n");
+		return 1;
+	}
+	if (randr_start(&state) < 0){
+		fprintf(stderr, "error while start randr\n");
+		return 4;
+	}
+
+	if (parse_arguments(argc, argv, is_debug_enabled, &state) < 0) {
+		fprintf(stderr, "error while parsing arguments\n");
 		return 2;
 	}
 
-	if(invert_colors(&state) < 0){
-		printf("error while inverting\n");
+	if (invert_colors(&state) < 0){
+		fprintf(stderr, "error while inverting\n");
 		// no return!
 	}
 
@@ -59,10 +71,22 @@ int main(int argc, const char *argv[]){
 	return 0;
 }
 
+int parse_debug_argument(int argc, const char *argv[], int *is_debug_enabled) {
+	/* first argument is the program name, skip it */
+	int current_arg;
+	for (current_arg = 1; current_arg < argc; current_arg++) {
+		if (strcmp(argv[current_arg], "-d") == 0) {
+			*is_debug_enabled = 1;
+			LOG_DEBUG(is_debug_enabled, "debug output enabled\n");
+		}
+	}
+	return 0;
+}
+
 void display_usage(const char *program_name);
 void display_version(const char *program_name);
 
-int parse_arguments(int argc, const char *argv[], randr_state_t *state) {
+int parse_arguments(int argc, const char *argv[], int is_debug_enabled, randr_state_t *state) {
 	/* first argument is the program name, skip it */
 	int current_arg;
 	for (current_arg = 1; current_arg < argc; current_arg++) {
@@ -73,27 +97,26 @@ int parse_arguments(int argc, const char *argv[], randr_state_t *state) {
 				int screen_nr;
 				char extra_junk[4];
 				if(sscanf(argv[current_arg], "%d%c", &screen_nr, extra_junk) != 1) {
-					printf("Screen number expected after '-s', instead of '%s'. Aborting.\n", 
+					fprintf(stderr, "Screen number expected after '-s', instead of '%s'. Aborting.\n", 
 						argv[current_arg]);
 					return -1;
 				}
-				printf("screen_nr = %d\n", screen_nr);
+				LOG_DEBUG(is_debug_enabled, "screen_nr = %d\n", screen_nr);
 				state->crtc_num = screen_nr;
 			} else {
-				printf("Screen number expected after '-s' option. Aborting.\n");
+				fprintf(stderr, "Screen number expected after '-s' option. Aborting.\n");
 				return -3;
 			}
-		} else if (strcmp(argv[current_arg], "-h") == 0) {
-			display_usage(argv[0]);
-			exit(EXIT_SUCCESS);
-		} else if (strcmp(argv[current_arg], "--help") == 0) {
+		} else if ((strcmp(argv[current_arg], "-h") == 0) || (strcmp(argv[current_arg], "--help") == 0)) {
 			display_usage(argv[0]);
 			exit(EXIT_SUCCESS);
 		} else if (strcmp(argv[current_arg], "--version") == 0) {
 			display_version(argv[0]);
 			exit(EXIT_SUCCESS);
+		} else if (strcmp(argv[current_arg], "-d") == 0) {
+			// skip silently
 		} else {
-			printf("Unknown argument: '%s'. Aborting.\n", argv[current_arg]);
+			fprintf(stderr, "Unknown argument: '%s'. Aborting.\n", argv[current_arg]);
 			return -4;
 		}
 	}
@@ -101,10 +124,12 @@ int parse_arguments(int argc, const char *argv[], randr_state_t *state) {
 }
 
 void display_usage(const char * program_name) {
-	printf("Usage: %s [-s screen_number]\n", program_name);
+	printf("Usage: %s [options] [-s screen_number]\n", program_name);
 	printf("       %s -h\n", program_name);
 	printf("       %s --help\n", program_name);
 	printf("       %s --version\n", program_name);
+	printf(" Options:\n");
+	printf("   -d    enable debug output\n");
 	printf("Simple utility that inverts colors on all screens, using XrandR.\n");
 	printf("When no parameter is given, it inverts colors on all screens; "
 		"if the screen_number parameter is given, then it inverts colors on "
