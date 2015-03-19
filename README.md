@@ -33,6 +33,11 @@ Redshift developers, for creating the XRandR gamma setting code. Their code is r
 http://jonls.dk/redshift/
 https://launchpad.net/redshift
 
+Alternatives
+-------------
+* `xcalib -i -a` : Inverts the colors of the current screen. 
+  * Note that as of date of last testing (2014, xcalib version 0.8) xcalib has not been able to invert the colors on all monitors in a multi-monitor setup, because all monitors are presented by the X11 server as a single screen. Thus this limitation is coming from the X11 server. `xrandr-invert-colors` does not have this limitation, because it uses XRandR API, which correctly handles all attached monitors.
+
 License
 -------
 GNU GPL v3
