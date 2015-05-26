@@ -5,7 +5,7 @@ Simple utility that inverts colors on all screens, using XrandR.
 
 Dependencies
 -------------
-- XrandR development files
+- XrandR development files (`apt-get install libxcb-randr0-dev`)
 
 
 Building
