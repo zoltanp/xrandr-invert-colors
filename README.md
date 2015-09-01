@@ -5,12 +5,18 @@ Simple utility that inverts colors on all screens, using XrandR.
 
 Dependencies
 -------------
-- XrandR development files (`apt-get install libxcb-randr0-dev`)
++ XrandR development files (`apt-get install libxcb-randr0-dev`) or type `sudo make deps`
 
 
 Building
 --------
 From a terminal, type `make`
+
+
+Installing
+----------
+Execute `sudo make install` after build to put the binary in the following location:
++ /usr/local/bin/xrandr-invert-colors
 
 
 Using
