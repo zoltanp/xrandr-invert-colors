@@ -6,7 +6,8 @@ CFLAGS+= -std=c99
 
 LDFLAGS= -lxcb-randr -lxcb
 
-PREFIX=/usr/local/bin
+PREFIX=/usr/local
+BINDIR=$(PREFIX)/bin
 
 TARGET=xrandr-invert-colors.bin
 
@@ -21,8 +22,8 @@ clean:
 	rm -f $(TARGET) xrandr-invert-colors.o gamma_randr.o
 
 install:
-	install -v -s -p -m 755 -o root -g root $(TARGET) $(PREFIX)/$(shell basename $(TARGET) .bin)
+	install -v -s -p -m 755 -o root -g root $(TARGET) $(BINDIR)/$(shell basename $(TARGET) .bin)
 
-deps:
+deps-apt:
 	apt-get install libxcb-randr0-dev
 
