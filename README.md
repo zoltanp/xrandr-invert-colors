@@ -49,4 +49,24 @@ License
 -------
 GNU GPL v3
 
+Frequently asked questions
+--------------------------
+
+### After a short time, the colors are reverted to original ones, there is no error message
+
+Please make sure that other color-adjusting program is not running in 
+the background, like RedShift.
+
+
+### It does not work on Ubuntu 17.10
+
+xrandr-invert-colors only works on Xorg, not on Wayland (or Mir).
+Please make sure that you use Xorg.
+
+"On supported systems, Wayland is now the default display server. The 
+older display server is still available: just choose Ubuntu on Xorg 
+from the cog on the log in screen. "
+https://wiki.ubuntu.com/ArtfulAardvark/ReleaseNotes
+
+See issue #15 .
 
