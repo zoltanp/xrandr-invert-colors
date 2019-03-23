@@ -1,28 +1,29 @@
-SHELL=/bin/bash
+.POSIX:
 
-CFLAGS= -Wall -Wextra
-CFLAGS+= -O0 -ggdb
-CFLAGS+= -std=c99
+CFLAGS = -Wall -Wextra -O0 -ggdb -std=c99
+LIBS   = -lxcb-randr -lxcb
 
-LDFLAGS= -lxcb-randr -lxcb
+PREFIX = /usr/local
+BINDIR = $(PREFIX)/bin
+TARGET = xrandr-invert-colors
 
-PREFIX=/usr/local
-BINDIR=$(PREFIX)/bin
-
-TARGET=xrandr-invert-colors.bin
+SRC = gamma_randr.c xrandr-invert-colors.c
+OBJ = $(SRC:.c=.o)
 
 all: $(TARGET)
 
-$(TARGET): gamma_randr.h gamma_randr.c xrandr-invert-colors.c
-	$(CC) $(CFLAGS) -c gamma_randr.c
-	$(CC) $(CFLAGS) -c xrandr-invert-colors.c
-	$(CC) $(CFLAGS) -o $(TARGET) xrandr-invert-colors.o gamma_randr.o $(LDFLAGS)
+$(TARGET): $(OBJ)
+	$(CC) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
+
+$(OBJ): gamma_randr.h
 
 clean:
-	rm -f $(TARGET) xrandr-invert-colors.o gamma_randr.o
+	rm -f $(TARGET) $(OBJ)
 
-install:
-	install -v -s -p -m 755 -o root -g root $(TARGET) $(BINDIR)/$(shell basename $(TARGET) .bin)
+install: $(TARGET)
+	mkdir -p $(DESTDIR)$(BINDIR)
+	cp $(TARGET) $(DESTDIR)$(BINDIR)
+	chmod 755 $(DESTDIR)$(BINDIR)/$(TARGET)
 
 deps-apt:
 	apt-get install libxcb-randr0-dev
