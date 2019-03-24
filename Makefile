@@ -24,7 +24,7 @@ install: $(TARGET)
 	mkdir -p $(DESTDIR)$(BINDIR)
 	cp $(TARGET) $(DESTDIR)$(BINDIR)
 	chmod 755 $(DESTDIR)$(BINDIR)/$(TARGET)
-	chown root:root $(DESTDIR)$(BINDIR)/$(TARGET)
+	#chown root:root $(DESTDIR)$(BINDIR)/$(TARGET) # not needed if make run as root
 
 deps-apt:
 	apt-get install libxcb-randr0-dev
