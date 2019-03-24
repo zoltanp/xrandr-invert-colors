@@ -1,4 +1,5 @@
 *~
 *.bin
 *.o
+xrandr-invert-colors
 

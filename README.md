@@ -22,7 +22,7 @@ Execute `sudo make install` after build to put the binary in the following locat
 
 Using
 -----
-Run `xrandr-invert-colors.bin` for inverting colors on all screens.
+Run `xrandr-invert-colors` for inverting colors on all screens.
 The follwing program option is implemented:
 
 * `-s <crtc_number>` : Instead of inverting all screens, invert only the colors of the screen identified by `<crtc_number>`.
@@ -30,7 +30,7 @@ The follwing program option is implemented:
 * `--version` : Print a (dummy) version information.
 * `-d` : Enables debug log on standard output. Prints diagonstic messages.
 
-Hint: put the executable in the a directory listed in $PATH, and bind the execution of `xrandr-invert-colors.bin` to a shortcut key.
+Hint: put the executable in the a directory listed in $PATH, and bind the execution of `xrandr-invert-colors` to a shortcut key.
 
 
 Achknowledgements
